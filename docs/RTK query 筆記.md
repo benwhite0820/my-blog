@@ -12,9 +12,9 @@ sidebar_position: 3
      當您發送請求時，如果使用 **`body: paymentStatus`** 而不是 **`body: { paymentStatus }`**，後端可能會收到一個空的請求主體 (**`{}`**)。這是因為在構建請求時，您直接將 **`paymentStatus`** 作為請求主體的值傳遞，而不是將其放入一個物件中。
      通常情況下，發送請求時，請求主體需要是一個有效的 JSON 物件。如果您的 **`paymentStatus`** 變數不放在物件中，後端可能無法正確解析請求主體，因為它期望接收一個 JSON 物件。
      為了解決這個問題，您應該始終將數據放入物件中，即使用 **`body: { paymentStatus }`**。這將確保請求主體包含有效的 JSON 格式數據，使後端能夠正確解析它。如果您不將數據放入物件中，後端可能會將請求主體視為空物件，因為沒有提供有效的 JSON 結構。
-3. 接下來，因為我們這支 api 會更新 user 的 credit 值，所以 `fetchCurrentUserCredits` 也要同步更新，因此就要搭配 `invalidatesTags` 去做更新，我們給定一個特定 array，RTK query 會回去找`providesTags` ，如果有一樣的 tag 的話，他會 invalidate 該 query 的 cache ，讓他 refetching 一次，記得位置要寫對，他不是放在 return 裡面
+3. 接下來，因為我們這支 api 會更新 user 的 credit 值，所以 `fetchCurrentUserCredits` 也要同步更新，因此就要搭配 `invalidatesTags` 去做更新，我們給定一個特定 array (也只能給 array)，RTK query 會回去找`providesTags` ，如果有一樣的 tag 的話，他會 invalidate 該 query 的 cache ，讓他 refetching 一次，記得位置要寫對，他不是放在 return 裡面
 
-   - `providesTags` 跟 `invalidatesTags` 的 callback 參數
+   - `providesTags` 跟 `invalidatesTags` 除了可以直接給 array 之外，也可以透過 callback 來動態生成，以下是三個參數
 
      1. `result`: response 拿回來的東西，因此我們可以用這個數值來動態給 tags
      2. `error` : 錯誤狀態，剛剛在 stack overflow 上有看到這種寫法，代表成功時會 refetching data
@@ -41,10 +41,9 @@ export const stripePaymentApi = createApi({
       query: () => {
         return 'current_user';
       },
-      providesTags: (result) => {
-        console.log('providesTags =>', result);
-        return ['Stripe_Payment'];
-      },
+      providesTags: (result) => [
+        { type: 'Stripe_Payment', id: result?.googleId },
+      ],
     }),
     fetchUpdateCredits: builder.mutation<
       UserDataType,
@@ -54,14 +53,12 @@ export const stripePaymentApi = createApi({
         return {
           url: `stripe_successful`,
           method: 'POST',
-          // 要注意給{}
           body: { paymentStatus },
         };
       },
-      invalidatesTags: (result) => {
-        console.log('invalidatesTags =>', result);
-        return ['Stripe_Payment'];
-      },
+      invalidatesTags: (result) => [
+        { type: 'Stripe_Payment', id: result?.googleId },
+      ],
     }),
   }),
 });
