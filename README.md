@@ -1,41 +1,5 @@
-# Website
+# my personal blog
 
-This website is built using [Docusaurus 2](https://docusaurus.io/), a modern static website generator.
+this is my blog! I would write down some stuff that I learn or interested about. ( well, in Mandarin though :P )
 
-### Installation
-
-```
-$ yarn
-```
-
-### Local Development
-
-```
-$ yarn start
-```
-
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
-
-### Build
-
-```
-$ yarn build
-```
-
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
-
-### Deployment
-
-Using SSH:
-
-```
-$ USE_SSH=true yarn deploy
-```
-
-Not using SSH:
-
-```
-$ GIT_USER=<Your GitHub username> yarn deploy
-```
-
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+これは私の技術ブログです！興味がある技術や学んでるものの記録です　(まあ、中国語なんですけど :P)
